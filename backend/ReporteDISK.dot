@@ -1,0 +1,14 @@
+digraph G {
+labelloc="t"
+subgraph cluster1 {
+label=""
+disco [shape=none label=<
+<TABLE border="0" cellspacing="4" cellpadding="5" color="skyblue">
+<TR><TD border="1" cellpadding="65">MBR</TD>
+<TD border="1" cellpadding="20">Partición 1<br/>16.67% del Disco</TD>
+<TD border="1" cellpadding="20">Libre<br/>83.33% del Disco</TD>
+</TR>
+</TABLE>
+>];
+}
+}

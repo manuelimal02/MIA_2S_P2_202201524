@@ -1,0 +1,130 @@
+digraph G {
+node [shape=plaintext];
+fontname="Courier New";
+title [label="REPORTE MBR
+MANUEL LIMA
+202201524"];
+mbrTable [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="blue" colspan='2'>MBR</td></tr>
+<tr><td>Tamaño</td><td>20971520</td></tr>
+<tr><td>Fecha De Creación</td><td>2024-09-20</td></tr>
+<tr><td>Ajuste</td><td>w</td></tr>
+<tr><td>Signature</td><td>638803450</td></tr>
+</table>
+>];
+subgraph cluster_1 {style=filled;color=lightgrey;label = "Particiones Principales";PA1 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición 1</td></tr>
+<tr><td>Estado</td><td>0</td></tr>
+<tr><td>Tipo</td><td>e</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>159</td></tr>
+<tr><td>Tamaño</td><td>5242880</td></tr>
+<tr><td>Nombre</td><td>part51</td></tr>
+<tr><td>Correlativo</td><td>1</td></tr>
+</table>
+>];
+PA2 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición 2</td></tr>
+<tr><td>Estado</td><td>1</td></tr>
+<tr><td>Tipo</td><td>p</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>5243039</td></tr>
+<tr><td>Tamaño</td><td>5242880</td></tr>
+<tr><td>Nombre</td><td>part53</td></tr>
+<tr><td>Correlativo</td><td>2</td></tr>
+</table>
+>];
+}
+subgraph cluster_2 {style=filled;color=lightgrey;label = "Partición Extendida";fontname="Courier New";EBR189 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="blue" colspan='2'>EBR</td></tr>
+<tr><td>Nombre</td><td>part52</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Inicio</td><td>189</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Siguiente</td><td>1048765</td></tr>
+</table>
+>];
+Pl0 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición Lógica</td></tr>
+<tr><td>Estado</td><td>0</td></tr>
+<tr><td>Tipo</td><td>l</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>189</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Nombre</td><td>part52</td></tr>
+<tr><td>Correlativo</td><td>1</td></tr>
+</table>
+>];
+EBR1048795 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="blue" colspan='2'>EBR</td></tr>
+<tr><td>Nombre</td><td>part54</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Inicio</td><td>1048795</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Siguiente</td><td>2097371</td></tr>
+</table>
+>];
+Pl1 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición Lógica</td></tr>
+<tr><td>Estado</td><td>0</td></tr>
+<tr><td>Tipo</td><td>l</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>1048795</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Nombre</td><td>part54</td></tr>
+<tr><td>Correlativo</td><td>2</td></tr>
+</table>
+>];
+EBR2097401 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="blue" colspan='2'>EBR</td></tr>
+<tr><td>Nombre</td><td>part55</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Inicio</td><td>2097401</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Siguiente</td><td>3145977</td></tr>
+</table>
+>];
+Pl2 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición Lógica</td></tr>
+<tr><td>Estado</td><td>0</td></tr>
+<tr><td>Tipo</td><td>l</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>2097401</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Nombre</td><td>part55</td></tr>
+<tr><td>Correlativo</td><td>3</td></tr>
+</table>
+>];
+EBR3146007 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="blue" colspan='2'>EBR</td></tr>
+<tr><td>Nombre</td><td>part56</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Inicio</td><td>3146007</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Siguiente</td><td>-1</td></tr>
+</table>
+>];
+Pl3 [label=<
+<table border='1' cellborder='1' cellspacing='0'>
+<tr><td bgcolor="red" colspan='2'>Partición Lógica</td></tr>
+<tr><td>Estado</td><td>0</td></tr>
+<tr><td>Tipo</td><td>l</td></tr>
+<tr><td>Ajuste</td><td>b</td></tr>
+<tr><td>Incio</td><td>3146007</td></tr>
+<tr><td>Tamaño</td><td>1048576</td></tr>
+<tr><td>Nombre</td><td>part56</td></tr>
+<tr><td>Correlativo</td><td>4</td></tr>
+</table>
+>];
+}
+}

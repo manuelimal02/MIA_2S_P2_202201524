@@ -1,0 +1,61 @@
+.container {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: rgb(217, 221, 243);
+  padding: 20px;
+  border-radius: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  margin: 0 0 10px 0;
+  font-size: 30px;
+  text-align: center;
+}
+
+h2 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+}
+
+.input-section, .output-section {
+  margin-bottom: 50px;
+}
+
+textarea {
+  width: 99%;
+  height: 230px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+}
+
+#outputArea {
+  background-color: #111;
+  color: #0f0;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}

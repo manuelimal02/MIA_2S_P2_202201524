@@ -1,0 +1,139 @@
+rmdisk -path=/home/manuelimal02/disks/Disco1.mia
+
+mkdisk -Size=6 -unit=M -path=/home/manuelimal02/disks/Disco1.mia
+mkdisk -Size=6 -unit=M -path=/home/manuelimal02/disks/Disco2.mia
+
+fdisk -type=E -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion1 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion2 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion3 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion4 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion5 -size=1
+
+fdisk -type=P -path=/home/manuelimal02/disks/Disco2.mia -Unit=M -name=Particion1 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco2.mia -Unit=M -name=Particion2 -size=1
+fdisk -type=E -path=/home/manuelimal02/disks/Disco2.mia -Unit=M -name=Particion3 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco2.mia -Unit=M -name=Particion4 -size=1
+
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion1
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion2
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion3
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion4
+
+/------------------------/
+mkdisk -Size=6 -unit=M -path=/home/manuelimal02/disks/Disco1.mia
+
+fdisk -type=E -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion1 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion2 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion3 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion4 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion5 -size=1
+
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion1
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion2
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion3
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion4
+
+mkfs -type=full -id=242a
+
+/------------------------/
+#Creando Disco
+mkdisk -Size=6 -unit=M -path=/home/manuelimal02/disks/Disco1.mia
+
+#Creando Particiones
+#Errores 1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion1 -size=1
+fdisk -type=E -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion2 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion3 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion4 -size=1
+#Errores 2
+fdisk -type=E -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion5 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion6 -size=1
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion7 -size=1
+#Errores 3
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion8 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion9 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion10 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion11 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion12 -size=1
+fdisk -type=L -path=/home/manuelimal02/disks/Disco1.mia -Unit=k -name=Particion13 -size=1
+
+#SE PUEDEN MONTAR
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion4
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion6
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion7
+
+#ERROR YA ESTÁ MONTADA
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion7
+
+#ERROR, ES UNA LOGICA, EL ERROR QUE VA MOSTRAR ES ALGO COMO QUE LA PARTICION NO EXISTIERA, ASI QUE OJO CON LO QUE DICE EN SUS ERRORES
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion13
+
+list 
+
+mkfs -type=full -id=242a
+
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco1.jpg -name=mbr
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco2.jpg -name=disk
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco3.jpg -name=sb
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco4.jpg -name=inode
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco5.txt -name=bm_inode
+rep -id=242a -path=/home/manuelimal02/disks/ReporteDisco6.txt -name=bm_block
+
+/-------------------------------------------------------------------------------------------------------------------------------------------------------/
+
+#Creando Disco
+mkdisk -Size=5 -unit=M -path=/home/manuelimal02/disks/Disco1.mia
+
+#Creando Particiones
+fdisk -type=P -path=/home/manuelimal02/disks/Disco1.mia -Unit=M -name=Particion1 -size=4
+
+mount -path=/home/manuelimal02/disks/Disco1.mia -name=Particion1
+
+list 
+
+mkfs -type=full -id=241a
+
+login -user=root -pass=123 -id=241a
+
+cat -file1=/users.txt
+
+mkgrp -name=usuarios
+mkgrp -name=adm
+mkgrp -name=mail
+mkgrp -name=news
+mkgrp -name=sys
+#ERROR YA EXISTE EL GRUPO
+mkgrp -name=sys
+
+
+#-----------------6. CAT-----------------
+cat -file1=/users.txt
+
+
+#-----------------10. RMGR-----------------
+rmgrp -name=mail
+
+
+#-----------------6. CAT-----------------
+cat -file1=/users.txt
+
+
+#-----------------11. MKUSR-----------------------------------------------
+mkusr -user="usuario1" -pass=password -grp=root
+mkusr -user="user1" -pass=abc -grp=usuarios
+mkusr -user="user2" -pass=abc -grp=usuarios
+#ERROR EL USUARIO YA EXISTE
+mkusr -user="user2" -pass=abc -grp=usuarios
+#ERROR GRUPO NO EXISTE
+mkusr -user="user3" -pass=abc -grp=system
+
+
+#-----------------6. CAT-----------------
+cat -file1=/users.txt
+
+#-----------------13. CHGRP-----------------
+chgrp -user=user2 -grp=adm
+
+
+#-----------------6. CAT-----------------
+cat -file1=/user.txt

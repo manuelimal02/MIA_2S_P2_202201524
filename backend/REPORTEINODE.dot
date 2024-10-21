@@ -1,0 +1,20 @@
+digraph G {
+node [shape=none];
+fontname="Courier New";
+title [label="REPORTE INODE
+MANUEL LIMA
+202201524"];
+inode1 [label=<
+<table border='0' cellborder='1' cellspacing='0' cellpadding='10'>
+<tr><td colspan='2' bgcolor='skyblue'>Inode 1</td></tr>
+<tr><td>UID</td><td>1</td></tr>
+<tr><td>GID</td><td>1</td></tr>
+<tr><td>Size</td><td>135</td></tr>
+<tr><td>ATime</td><td>2024-09-20 09:00:</td></tr>
+<tr><td>CTime</td><td>2024-09-20 09:00:</td></tr>
+<tr><td>MTime</td><td>2024-09-20 09:00:</td></tr>
+<tr><td>Blocks</td><td>[1 2 3 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1]</td></tr>
+<tr><td>Perms</td><td>[54 54 52]</td></tr>
+</table>
+ >];
+}
