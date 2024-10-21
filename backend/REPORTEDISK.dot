@@ -7,36 +7,14 @@ MANUEL LIMA
 202201524"];
 subgraph cluster1 {
 fontname="Courier New";
-label="Disco En La Ruta:/home/manuelimal02/calificacion_mia/discos/disco5.mia "
+label="Disco En La Ruta:/home/manuelimal02/calificacion_mia/discos/disco1.mia "
 disco [shape=none label=<
 <TABLE border="0" cellspacing="4" cellpadding="5" color="skyblue">
 <TR><TD bgcolor="#ffcc99" border="1" cellpadding="65">MBR</TD>
-<TD border="1" width="75">
-<TABLE border="0" cellspacing="4" cellpadding="10">
-<TR><TD bgcolor="#99ccff" border="1" colspan="5" height="75"> Partición Extendida<br/></TD></TR>
-<TR>
-<TD bgcolor="#336699" border="1" height="185">EBR</TD>
-<TD bgcolor="#6699cc" border="1" cellpadding="25">Partición Lógica<br/>5.00% del Disco</TD>
-</TR>
-<TR>
-<TD bgcolor="#336699" border="1" height="185">EBR</TD>
-<TD bgcolor="#6699cc" border="1" cellpadding="25">Partición Lógica<br/>5.00% del Disco</TD>
-</TR>
-<TR>
-<TD bgcolor="#336699" border="1" height="185">EBR</TD>
-<TD bgcolor="#6699cc" border="1" cellpadding="25">Partición Lógica<br/>5.00% del Disco</TD>
-</TR>
-<TR>
-<TD bgcolor="#336699" border="1" height="185">EBR</TD>
-<TD bgcolor="#6699cc" border="1" cellpadding="25">Partición Lógica<br/>5.00% del Disco</TD>
-</TR>
-<TR>
-<TD bgcolor="#ffcc66" border="1" colspan="5"> Espacio Libre Dentro De La Partición Extendida<br/>5.00% del Disco</TD>
-</TR>
-</TABLE>
-</TD>
-<TD bgcolor="#ccff99" border="1" cellpadding="20">Partición Primaria 2<br/>25.00% del Disco</TD>
-<TD bgcolor="#f1e6d2" border="1" cellpadding="20">Espacio Libre<br/>50.00% del Disco</TD>
+<TD bgcolor="#ccff99" border="1" cellpadding="20">Partición Primaria 1<br/>33.33% del Disco</TD>
+<TD bgcolor="#ccff99" border="1" cellpadding="20">Partición Primaria 2<br/>16.67% del Disco</TD>
+<TD bgcolor="#ccff99" border="1" cellpadding="20">Partición Primaria 3<br/>16.67% del Disco</TD>
+<TD bgcolor="#f1e6d2" border="1" cellpadding="20">Espacio Libre<br/>33.33% del Disco</TD>
 </TR>
 </TABLE>
 >];

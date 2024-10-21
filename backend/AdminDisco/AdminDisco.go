@@ -135,6 +135,23 @@ func MKDISK(tamano int, ajuste string, unidad string, ruta string, buffer *bytes
 			return
 		}
 	}
+
+	//Escribir grandes bloques de ceros
+	TamanioBloque := 1024 * 1024
+	BloqueCero := make([]byte, TamanioBloque)
+	TamanioRestante := tamano
+	for TamanioRestante > 0 {
+		if TamanioRestante < TamanioBloque {
+			BloqueCero = make([]byte, TamanioRestante)
+		}
+		_, err := archivo.Write(BloqueCero)
+		if err != nil {
+			fmt.Fprintf(buffer, "Error MKDISK: Error escribiendo ceros: %v.\n", err)
+			return
+		}
+		TamanioRestante -= TamanioBloque
+	}
+
 	// Inicializar el MBR
 	var nuevo_mbr EstructuraDisco.MRB
 	nuevo_mbr.MbrTamano = int32(tamano)
@@ -510,4 +527,149 @@ func LIST(buffer *bytes.Buffer) {
 		}
 		fmt.Fprintf(buffer, "---------------------------\n")
 	}
+}
+
+// Función para eliminar particiones
+func ELIMINAR_PARTICION(path string, name string, delete string, buffer *bytes.Buffer) {
+	fmt.Fprint(buffer, "FDISK DELETE---------------------------------------------------------------------\n")
+
+	// Validaciones para la opción -delete
+	if delete == "" {
+		fmt.Println("Error FDISK DELETE: Se debe establecer la configuración 'fast' o 'full'.")
+		return
+	}
+
+	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
+	if err != nil {
+		return
+	}
+
+	var MBRTemporal EstructuraDisco.MRB
+	if err := ManejoArchivo.LeerObjeto(file, &MBRTemporal, 0, buffer); err != nil {
+		return
+	}
+
+	ExisteParticion := false
+	for i := 0; i < 4; i++ {
+		NombreParticion := strings.TrimRight(string(MBRTemporal.Partitions[i].PartName[:]), "\x00")
+		if NombreParticion == name {
+			ExisteParticion = true
+			// Si es una partición extendida, eliminar las particiones lógicas dentro de ella
+			if MBRTemporal.Partitions[i].PartType[0] == 'e' {
+				fmt.Println("Eliminando Particiones Lógicas Dentro De La Partición Extendida.")
+				EBRPosterior := MBRTemporal.Partitions[i].PartStart
+				var EBRActual EstructuraDisco.EBR
+				for {
+					err := ManejoArchivo.LeerObjeto(file, &EBRActual, int64(EBRPosterior), buffer)
+					if err != nil {
+						break
+					}
+					// Detener el bucle si el EBR está vacío
+					if EBRActual.PartStart == 0 && EBRActual.PartSize == 0 {
+						break
+					}
+					// Eliminar partición lógica
+					if delete == "fast" {
+						EBRActual = EstructuraDisco.EBR{}                                          // Resetear el EBR manualmente
+						ManejoArchivo.EscribirObjeto(file, EBRActual, int64(EBRPosterior), buffer) // Sobrescribir el EBR reseteado
+					} else if delete == "full" {
+						ManejoArchivo.LlenarEspacioConCeros(file, EBRActual.PartStart, EBRActual.PartSize, buffer)
+						EBRActual = EstructuraDisco.EBR{}                                          // Resetear el EBR manualmente
+						ManejoArchivo.EscribirObjeto(file, EBRActual, int64(EBRPosterior), buffer) // Sobrescribir el EBR reseteado
+					}
+					if EBRActual.PartNext == -1 {
+						break
+					}
+					EBRPosterior = EBRActual.PartNext
+				}
+			}
+			// Proceder a eliminar la partición (extendida o primaria)
+			if delete == "fast" {
+				MBRTemporal.Partitions[i] = EstructuraDisco.Partition{} // Resetear la partición manualmente
+				fmt.Fprintf(buffer, "Partición eliminada correctamente en modo Fast.\n")
+			} else if delete == "full" {
+				start := MBRTemporal.Partitions[i].PartStart
+				size := MBRTemporal.Partitions[i].PartSize
+				MBRTemporal.Partitions[i] = EstructuraDisco.Partition{} // Resetear la partición manualmente
+				ManejoArchivo.LlenarEspacioConCeros(file, start, size, buffer)
+				ManejoArchivo.VerificarCeros(file, start, size, buffer)
+				fmt.Fprintf(buffer, "Partición eliminada correctamente en modo Full.\n")
+			}
+			break
+		}
+	}
+
+	if !ExisteParticion {
+		fmt.Println("Buscando En Particiones Lógicas Dentro De Las Extendidas.")
+		for i := 0; i < 4; i++ {
+			if MBRTemporal.Partitions[i].PartType[0] == 'e' {
+				EBRPosterior := MBRTemporal.Partitions[i].PartStart
+				var EBRTemporalA EstructuraDisco.EBR
+				for {
+					err := ManejoArchivo.LeerObjeto(file, &EBRTemporalA, int64(EBRPosterior), buffer)
+					if err != nil {
+						break
+					}
+					NombreParticionLogica := strings.TrimRight(string(EBRTemporalA.PartName[:]), "\x00")
+					if NombreParticionLogica == name {
+						ExisteParticion = true
+						if delete == "fast" {
+							EBRTemporalA = EstructuraDisco.EBR{}                                          // Resetear el EBR manualmente
+							ManejoArchivo.EscribirObjeto(file, EBRTemporalA, int64(EBRPosterior), buffer) // Sobrescribir el EBR reseteado
+							fmt.Fprintf(buffer, "Partición lógica eliminada correctamente en modo Fast.\n")
+						} else if delete == "full" {
+							ManejoArchivo.LlenarEspacioConCeros(file, EBRTemporalA.PartStart, EBRTemporalA.PartSize, buffer)
+							EBRTemporalA = EstructuraDisco.EBR{}                                          // Resetear el EBR manualmente
+							ManejoArchivo.EscribirObjeto(file, EBRTemporalA, int64(EBRPosterior), buffer) // Sobrescribir el EBR reseteado
+							ManejoArchivo.VerificarCeros(file, EBRTemporalA.PartStart, EBRTemporalA.PartSize, buffer)
+							fmt.Fprintf(buffer, "Partición lógica eliminada correctamente en modo Full.\n")
+						}
+						break
+					}
+					if EBRTemporalA.PartNext == -1 {
+						break
+					}
+					EBRPosterior = EBRTemporalA.PartNext
+				}
+			}
+			if ExisteParticion {
+				break
+			}
+		}
+	}
+
+	if !ExisteParticion {
+		fmt.Fprintf(buffer, "Error FDISK DELETE: No se encontró la partición con el nombre: %s\n", name)
+		return
+	}
+
+	if err := ManejoArchivo.EscribirObjeto(file, MBRTemporal, 0, buffer); err != nil {
+		return
+	}
+	fmt.Println("--------------------------------------------------------------------")
+	fmt.Println("MBR Y EBR Actualizado Después De La Eliminación:")
+	EstructuraDisco.ImprimirMBR(MBRTemporal)
+	fmt.Println("--------------------------------------------------------------------")
+	for i := 0; i < 4; i++ {
+		if MBRTemporal.Partitions[i].PartType[0] == 'e' {
+			EBRPosterior := MBRTemporal.Partitions[i].PartStart
+			var EBRTemporalA EstructuraDisco.EBR
+			for {
+				err := ManejoArchivo.LeerObjeto(file, &EBRTemporalA, int64(EBRPosterior), buffer)
+				if err != nil {
+					break
+				}
+				if EBRTemporalA.PartStart == 0 && EBRTemporalA.PartSize == 0 {
+					break
+				}
+				EstructuraDisco.PrintEBR(EBRTemporalA)
+				if EBRTemporalA.PartNext == -1 {
+					break
+				}
+				EBRPosterior = EBRTemporalA.PartNext
+			}
+		}
+	}
+	fmt.Println("--------------------------------------------------------------------")
+	defer file.Close()
 }

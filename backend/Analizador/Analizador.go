@@ -142,6 +142,7 @@ func comando_fdisk(entrada string, buffer io.Writer) {
 	tipo := fs.String("type", "p", "Tipo")
 	ajuste := fs.String("fit", "wf", "Ajuste")
 	nombre := fs.String("name", "", "Nombre")
+	eliminar := fs.String("delete", "", "Eliminar")
 
 	fs.Parse(os.Args[1:])
 	matches := re.FindAllStringSubmatch(entrada, -1)
@@ -153,12 +154,21 @@ func comando_fdisk(entrada string, buffer io.Writer) {
 		valorFlag = strings.Trim(valorFlag, "\"")
 
 		switch nombreFlag {
-		case "size", "unit", "path", "type", "fit", "name":
+		case "size", "unit", "path", "type", "fit", "name", "delete":
 			fs.Set(nombreFlag, valorFlag)
 		default:
 			fmt.Fprintf(buffer, "Error: El comando 'FDISK' incluye parámetros no asociados.\n")
 			return
 		}
+	}
+
+	if *eliminar != "" {
+		if *ruta == "" || *nombre == "" {
+			fmt.Println("Error FDISK DELETE: Para eliminar una partición, se requiere 'ruta' y 'nombre de la partición'.")
+			return
+		}
+		AdminDisco.ELIMINAR_PARTICION(*ruta, *nombre, *eliminar, buffer.(*bytes.Buffer))
+		return
 	}
 	AdminDisco.FDISK(*tamano, *unidad, *ruta, *tipo, *ajuste, *nombre, buffer.(*bytes.Buffer))
 }
