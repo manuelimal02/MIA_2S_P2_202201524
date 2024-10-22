@@ -129,14 +129,6 @@ func MKDISK(tamano int, ajuste string, unidad string, ruta string, buffer *bytes
 		return
 	}
 	// Inicializar el archivo con ceros
-	for i := 0; i < tamano; i++ {
-		err := ManejoArchivo.EscribirObjeto(archivo, byte(0), int64(i), buffer)
-		if err != nil {
-			return
-		}
-	}
-
-	//Escribir grandes bloques de ceros
 	TamanioBloque := 1024 * 1024
 	BloqueCero := make([]byte, TamanioBloque)
 	TamanioRestante := tamano
@@ -755,4 +747,167 @@ func ELIMINAR_PARTICION(path string, name string, delete string, buffer *bytes.B
 	}
 	fmt.Println("--------------------------------------------------------------------")
 	defer file.Close()
+}
+
+func ADD_PARTICION(path string, name string, add int, unit string, buffer *bytes.Buffer) error {
+	fmt.Fprint(buffer, "FDISK ADD---------------------------------------------------------------------\n")
+
+	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	var MbrTemporal EstructuraDisco.MRB
+	if err := ManejoArchivo.LeerObjeto(file, &MbrTemporal, 0, buffer); err != nil {
+		return err
+	}
+
+	var ParticionEncontrada *EstructuraDisco.Partition
+	var TipoParticion byte
+
+	// Revisar si la partición es primaria o extendida
+	for i := 0; i < 4; i++ {
+		NombreParticion := strings.TrimRight(string(MbrTemporal.Partitions[i].PartName[:]), "\x00")
+		if NombreParticion == name {
+			ParticionEncontrada = &MbrTemporal.Partitions[i]
+			TipoParticion = MbrTemporal.Partitions[i].PartType[0]
+			break
+		}
+	}
+
+	// Si no se encuentra en las primarias/extendidas, buscar en las particiones lógicas
+	if ParticionEncontrada == nil {
+		for i := 0; i < 4; i++ {
+			if MbrTemporal.Partitions[i].PartType[0] == 'e' {
+				EBRPosterior := MbrTemporal.Partitions[i].PartStart
+				var EBRTemporal1 EstructuraDisco.EBR
+				for {
+					if err := ManejoArchivo.LeerObjeto(file, &EBRTemporal1, int64(EBRPosterior), buffer); err != nil {
+						return err
+					}
+					EBRNombreParticion := strings.TrimRight(string(EBRTemporal1.PartName[:]), "\x00")
+					if EBRNombreParticion == name {
+						TipoParticion = 'l'
+						ParticionEncontrada = &EstructuraDisco.Partition{
+							PartStart: EBRTemporal1.PartStart,
+							PartSize:  EBRTemporal1.PartSize,
+						}
+						break
+					}
+					if EBRTemporal1.PartNext == -1 {
+						break
+					}
+					EBRPosterior = EBRTemporal1.PartNext
+				}
+				if ParticionEncontrada != nil {
+					break
+				}
+			}
+		}
+	}
+
+	if ParticionEncontrada == nil {
+		fmt.Fprintf(buffer, "Error FDISK ADD: No se encontró la partición con el nombre: %s.\n", name)
+		return nil
+	}
+
+	var BytesAgregarELiminar int
+	if unit == "k" {
+		BytesAgregarELiminar = add * 1024
+	} else if unit == "m" {
+		BytesAgregarELiminar = add * 1024 * 1024
+	} else {
+		fmt.Fprintf(buffer, "Error FDISK ADD: Unidad desconocida, debe ser 'K' o 'M'.\n")
+		return nil
+	}
+
+	var DeberiaModificar = true
+
+	// Comprobar si es posible agregar o quitar espacio
+	if add > 0 {
+		// Agregar espacio: verificar si hay suficiente espacio libre después de la partición
+		nextPartitionStart := ParticionEncontrada.PartStart + ParticionEncontrada.PartSize
+		if TipoParticion == 'l' {
+			// Para particiones lógicas, verificar con el siguiente EBR o el final de la partición extendida
+			for i := 0; i < 4; i++ {
+				if MbrTemporal.Partitions[i].PartType[0] == 'e' {
+					extendedPartitionEnd := MbrTemporal.Partitions[i].PartStart + MbrTemporal.Partitions[i].PartSize
+					if nextPartitionStart+int32(BytesAgregarELiminar) > extendedPartitionEnd {
+						fmt.Fprintf(buffer, "Error FDISK ADD: No hay suficiente espacio libre dentro de la partición extendida.\n")
+						DeberiaModificar = false
+					}
+					break
+				}
+			}
+		} else {
+			if nextPartitionStart+int32(BytesAgregarELiminar) > MbrTemporal.MbrTamano {
+				fmt.Fprintf(buffer, "Error FDISK ADD: No hay suficiente espacio libre después de la partición.\n")
+				DeberiaModificar = false
+			}
+		}
+	} else {
+		// Quitar espacio: verificar que no se reduzca el tamaño por debajo de 0
+		if ParticionEncontrada.PartSize+int32(BytesAgregarELiminar) < 0 {
+			fmt.Fprintf(buffer, "Error FDISK ADD: No es posible reducir la partición por debajo de %d.\n", add)
+			DeberiaModificar = false
+		}
+	}
+
+	// Solo modificar si no hay errores
+	if DeberiaModificar {
+		ParticionEncontrada.PartSize += int32(BytesAgregarELiminar)
+		fmt.Fprintf(buffer, "Tamaño de la partición modificado con éxito en la ruta: %s con el nombre: %s.\n", path, name)
+	} else {
+		fmt.Fprintf(buffer, "Error FDISK ADD: No se realizaron modificaciones debido a un error.\n")
+		return nil
+	}
+
+	// Si es una partición lógica, sobrescribir el EBR
+	if TipoParticion == 'l' {
+		EBRPosterior := ParticionEncontrada.PartStart
+		var EBRTemporal2 EstructuraDisco.EBR
+		if err := ManejoArchivo.LeerObjeto(file, &EBRTemporal2, int64(EBRPosterior), buffer); err != nil {
+			return err
+		}
+		EBRTemporal2.PartSize = ParticionEncontrada.PartSize
+		if err := ManejoArchivo.EscribirObjeto(file, EBRTemporal2, int64(EBRPosterior), buffer); err != nil {
+			return err
+		}
+
+	}
+
+	if err := ManejoArchivo.EscribirObjeto(file, MbrTemporal, 0, buffer); err != nil {
+		fmt.Println("Error al escribir el MBR actualizado:", err)
+		return err
+	}
+
+	// Imprimir el MBR modificado
+	fmt.Println("--------------------------------------------------------------------")
+	fmt.Println("MBR Y EBR Actualizado Después De La Eliminación:")
+	EstructuraDisco.ImprimirMBR(MbrTemporal)
+	fmt.Println("--------------------------------------------------------------------")
+	for i := 0; i < 4; i++ {
+		if MbrTemporal.Partitions[i].PartType[0] == 'e' {
+			EBRPosterior := MbrTemporal.Partitions[i].PartStart
+			var EBRTemporalA EstructuraDisco.EBR
+			for {
+				err := ManejoArchivo.LeerObjeto(file, &EBRTemporalA, int64(EBRPosterior), buffer)
+				if err != nil {
+					break
+				}
+				if EBRTemporalA.PartStart == 0 && EBRTemporalA.PartSize == 0 {
+					break
+				}
+				EstructuraDisco.PrintEBR(EBRTemporalA)
+				if EBRTemporalA.PartNext == -1 {
+					break
+				}
+				EBRPosterior = EBRTemporalA.PartNext
+			}
+		}
+	}
+	fmt.Println("--------------------------------------------------------------------")
+
+	return nil
 }

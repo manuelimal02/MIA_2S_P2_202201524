@@ -109,6 +109,7 @@ func comando_mkdisk(params string, buffer io.Writer) {
 			return
 		}
 	}
+	fs.Parse([]string{})
 	AdminDisco.MKDISK(*tamano, *ajuste, *unidad, *ruta, buffer.(*bytes.Buffer))
 }
 
@@ -145,6 +146,7 @@ func comando_fdisk(entrada string, buffer io.Writer) {
 	ajuste := fs.String("fit", "wf", "Ajuste")
 	nombre := fs.String("name", "", "Nombre")
 	eliminar := fs.String("delete", "", "Eliminar")
+	agregar := fs.String("add", "", "Tamaño")
 
 	fs.Parse(os.Args[1:])
 	matches := re.FindAllStringSubmatch(entrada, -1)
@@ -156,12 +158,28 @@ func comando_fdisk(entrada string, buffer io.Writer) {
 		valorFlag = strings.Trim(valorFlag, "\"")
 
 		switch nombreFlag {
-		case "size", "unit", "path", "type", "fit", "name", "delete":
+		case "size", "unit", "path", "type", "fit", "name", "delete", "add":
 			fs.Set(nombreFlag, valorFlag)
 		default:
 			fmt.Fprintf(buffer, "Error: El comando 'FDISK' incluye parámetros no asociados.\n")
 			return
 		}
+	}
+
+	if *agregar != "" {
+		var Add int
+		Add, err := strconv.Atoi(*agregar)
+		if err != nil {
+			fmt.Fprintf(buffer, "Error: No se pudo convertir el valor de 'add' a entero.\n")
+			return
+		}
+		if *ruta == "" || *nombre == "" {
+			fmt.Fprint(buffer, "Error FDISK ADD: Para agregar una partición, se requiere 'unit', 'ruta' y 'nombre de la partición'.\n")
+			return
+		}
+		fmt.Fprintf(buffer, "Tamano A Agregar O Eliminar: %d\n", Add)
+		AdminDisco.ADD_PARTICION(*ruta, *nombre, Add, *unidad, buffer.(*bytes.Buffer))
+		return
 	}
 
 	if *eliminar != "" {
