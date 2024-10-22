@@ -55,6 +55,8 @@ func AnalizarComando(comando string, parametros string, buffer io.Writer) {
 		comando_rmdisk(parametros, buffer)
 	} else if strings.Contains(comando, "fdisk") {
 		comando_fdisk(parametros, buffer)
+	} else if strings.Contains(comando, "unmount") {
+		comando_unmount(parametros, buffer)
 	} else if strings.Contains(comando, "mount") {
 		comando_mount(parametros, buffer)
 	} else if strings.Contains(comando, "mkfs") {
@@ -495,3 +497,27 @@ func comando_chgrp(entrada string, buffer io.Writer) {
 	AdminRoot.Chgrp(*usr, *grp, buffer.(*bytes.Buffer))
 }
 */
+
+func comando_unmount(entrada string, buffer io.Writer) {
+	fs := flag.NewFlagSet("unmount", flag.ExitOnError)
+	id := fs.String("id", "", "ID")
+
+	fs.Parse(os.Args[1:])
+	matches := re.FindAllStringSubmatch(entrada, -1)
+
+	for _, match := range matches {
+		nombreFlag := match[1]
+		valorFlag := strings.ToLower(match[2])
+
+		valorFlag = strings.Trim(valorFlag, "\"")
+
+		switch nombreFlag {
+		case "id":
+			fs.Set(nombreFlag, valorFlag)
+		default:
+			fmt.Fprintf(buffer, "Error: El comando 'UNMOUNT' incluye parámetros no asociados.\n")
+			return
+		}
+	}
+	AdminDisco.UNMOUNT(*id, buffer.(*bytes.Buffer))
+}

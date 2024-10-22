@@ -10,25 +10,34 @@ fdisk -type=P -unit=M -name=Part3 -size=10 -path=/home/manuelimal02/Calificacion
 
 fdisk -type=E -unit=M -name=Part4 -size=10 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF
 
+mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part1
+mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part2
+mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part3
+list
+unmount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part1
+list 
+
 fdisk -type=L -unit=k -name=Part4 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF -size=1
 fdisk -type=L -unit=k -name=Part5 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF -size=1
 fdisk -type=L -unit=k -name=Part6 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF -size=1
 fdisk -type=L -unit=k -name=Part7 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF -size=1
 
-mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part1
-
 rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p1_r1_disk.jpg -name=disk
 
 
 #ELIMINANDO PARTICIONES
+#ELIMINANDO PARTICIONES PRIMARIAS
 fdisk -delete=fast -name=Part2 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
 rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p2_r1_disk.jpg -name=disk
 
 fdisk -delete=full -name=Part3 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
 rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p3_r1_disk.jpg -name=disk
 
+#ELIMINANDO PARTICIONES LOGICAS
+#ESTE ELIMINA TODAS LAS PARTICIONES DEL VERGASO
 fdisk -delete=fast -name=Part5 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
 rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p4_r1_disk.jpg -name=disk
 
+#ESTE ELIMINA DESDE LA UBICACION DE LA PARTICION PARA "ADELANTE"
 fdisk -delete=full -name=Part6 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
 rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p5_r1_disk.jpg -name=disk

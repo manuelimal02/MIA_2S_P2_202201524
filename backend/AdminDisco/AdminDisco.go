@@ -508,6 +508,91 @@ func MOUNT(ruta string, nombre string, buffer *bytes.Buffer) {
 	defer archivo.Close()
 }
 
+func UNMOUNT(id string, buffer *bytes.Buffer) {
+	fmt.Fprintf(buffer, "UNMOUNT---------------------------------------------------------------------\n")
+
+	if id == "" {
+		fmt.Fprintf(buffer, "Error UNMOUNT: El ID de la partición es obligatorio.\n")
+		return
+	}
+
+	var PariticionEncontrada *ParticionMontada
+	var ID_Disco string
+	var IndiceParticion int
+	var Ruta string
+
+	for disco, Particiones := range ListaParticionesMontadas {
+		for i, partition := range Particiones {
+			if partition.ID == id {
+				PariticionEncontrada = &Particiones[i]
+				ID_Disco = disco
+				IndiceParticion = i
+				Ruta = PariticionEncontrada.Ruta
+				break
+			}
+		}
+		if PariticionEncontrada != nil {
+			break
+		}
+	}
+
+	if PariticionEncontrada == nil {
+		fmt.Fprintf(buffer, "Error: No se encontró una partición montada con el ID proporcionado: %s.\n", id)
+		return
+	}
+
+	// Abrir el archivo del disco correspondiente
+	file, err := ManejoArchivo.AbrirArchivo(PariticionEncontrada.Ruta, buffer)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// Leer el MBR
+	var MBRTemporal EstructuraDisco.MRB
+	if err := ManejoArchivo.LeerObjeto(file, &MBRTemporal, 0, buffer); err != nil {
+		fmt.Println("Error: No se pudo leer el MBR desde el archivo")
+		return
+	}
+
+	// Buscar la partición en el MBR utilizando el nombre
+	NombreBytes := [16]byte{}
+	copy(NombreBytes[:], []byte(PariticionEncontrada.Nombre))
+	ParticionActualizada := false
+
+	for i := 0; i < 4; i++ {
+		if bytes.Equal(MBRTemporal.Partitions[i].PartName[:], NombreBytes[:]) {
+			// Cambiar el estado de la partición de montada ('1') a desmontada ('0')
+			MBRTemporal.Partitions[i].PartStatus[0] = '0'
+			// Borrar el ID de la partición
+			copy(MBRTemporal.Partitions[i].PartId[:], "")
+			ParticionActualizada = true
+			break
+		}
+	}
+
+	if !ParticionActualizada {
+		fmt.Fprintf(buffer, "Error: No se pudo encontrar la partición en el MBR para desmontar.\n")
+		return
+	}
+	// Sobrescribir el MBR actualizado al archivo
+	if err := ManejoArchivo.EscribirObjeto(file, MBRTemporal, 0, buffer); err != nil {
+		return
+	}
+	// Eliminar la partición de la lista de particiones montadas
+	ListaParticionesMontadas[ID_Disco] = append(ListaParticionesMontadas[ID_Disco][:IndiceParticion], ListaParticionesMontadas[ID_Disco][IndiceParticion+1:]...)
+
+	// Si ya no hay particiones montadas en este disco, eliminar el disco de la lista
+	if len(ListaParticionesMontadas[ID_Disco]) == 0 {
+		delete(ListaParticionesMontadas, ID_Disco)
+	}
+
+	fmt.Fprintf(buffer, "Partición desmontada con éxito en la ruta: %s con el nombre: %s y ID: %s.\n", Ruta, PariticionEncontrada.Nombre, id)
+	fmt.Println("---------------------------------------------")
+	PrintMountedPartitions(Ruta, buffer)
+	fmt.Println("---------------------------------------------")
+}
+
 func LIST(buffer *bytes.Buffer) {
 	fmt.Fprintf(buffer, "LIST---------------------------------------------------------------------\n")
 	if len(ListaParticionesMontadas) == 0 {
@@ -533,7 +618,6 @@ func LIST(buffer *bytes.Buffer) {
 func ELIMINAR_PARTICION(path string, name string, delete string, buffer *bytes.Buffer) {
 	fmt.Fprint(buffer, "FDISK DELETE---------------------------------------------------------------------\n")
 
-	// Validaciones para la opción -delete
 	if delete == "" {
 		fmt.Println("Error FDISK DELETE: Se debe establecer la configuración 'fast' o 'full'.")
 		return
@@ -642,7 +726,6 @@ func ELIMINAR_PARTICION(path string, name string, delete string, buffer *bytes.B
 		fmt.Fprintf(buffer, "Error FDISK DELETE: No se encontró la partición con el nombre: %s\n", name)
 		return
 	}
-
 	if err := ManejoArchivo.EscribirObjeto(file, MBRTemporal, 0, buffer); err != nil {
 		return
 	}
