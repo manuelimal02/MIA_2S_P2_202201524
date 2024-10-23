@@ -7,13 +7,13 @@ MANUEL LIMA
 SBTable [label=<
 <table border='1' cellborder='1' cellspacing='0'>
 <tr><td bgcolor="skyblue" colspan='2'>Super Bloque</td></tr>
-<tr><td>SB FileSystem Type</td><td>2</td></tr>
-<tr><td>SB Inodes Count</td><td>32463</td></tr>
-<tr><td>SB Blocks Count</td><td>97389</td></tr>
-<tr><td>SB Free Blocks Count</td><td>97387</td></tr>
-<tr><td>SB Free Inodes Count</td><td>32461</td></tr>
-<tr><td>SB Mtime</td><td>2024-09-20 09:00:</td></tr>
-<tr><td>SB Umtime</td><td>2024-09-20 09:00:</td></tr>
+<tr><td>SB FileSystem Type</td><td>3</td></tr>
+<tr><td>SB Inodes Count</td><td>1795</td></tr>
+<tr><td>SB Blocks Count</td><td>5385</td></tr>
+<tr><td>SB Free Blocks Count</td><td>5383</td></tr>
+<tr><td>SB Free Inodes Count</td><td>1793</td></tr>
+<tr><td>SB Mtime</td><td>2024-10-23 17:11:</td></tr>
+<tr><td>SB Umtime</td><td>2024-10-23 17:11:</td></tr>
 <tr><td>SB Mnt Count</td><td>1</td></tr>
 <tr><td>SB Magic</td><td>61267</td></tr>
 <tr><td>SB Inode Size</td><td>127</td></tr>
@@ -21,9 +21,9 @@ SBTable [label=<
 <tr><td>SB Fist Inode</td><td>0</td></tr>
 <tr><td>SB First Block</td><td>0</td></tr>
 <tr><td>SB Bm Inode Start</td><td>253</td></tr>
-<tr><td>SB Bm Block Start</td><td>32716</td></tr>
-<tr><td>SB Inode Start</td><td>130105</td></tr>
-<tr><td>SB Block Start</td><td>4252906</td></tr>
+<tr><td>SB Bm Block Start</td><td>2048</td></tr>
+<tr><td>SB Inode Start</td><td>7433</td></tr>
+<tr><td>SB Block Start</td><td>235398</td></tr>
 </table>
 >];
 }

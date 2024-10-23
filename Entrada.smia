@@ -1,0 +1,49 @@
+#Ejemplo Archivo Calificacion Proyecto 2
+#2S 2024
+#Cambiar "manuelimal02" -> por el usuario de su distribución de linux
+#Cambiar “24” -> por los ultimos dos digitos de su carnet
+#Cambiar “RUTA_CONTENIDO” -> por la ruta del archivo que tenga su Nombre
+
+#******************** CREACION DE DISCO ********************
+# 60M A
+Mkdisk -size=60 -unit=M -fit=FF -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
+
+#******************** CREACION DE PARTICIONES ********************
+#DISCO 1
+# 20M
+fdisk -type=P -unit=b -name=Part1 -size=20971520 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF
+#241a -> 24 sus ultimos dos digitos
+mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part1
+# 10M
+fdisk -type=P -unit=k -name=Part2 -size=10240 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF
+# 10M
+fdisk -type=P -unit=M -name=Part3 -size=10 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -fit=BF
+
+rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p1_r1_disk.jpg -name=disk
+
+#ELIMINANDO PARTICIONES
+fdisk -delete=fast -name=Part3 -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia
+rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p2_r1_disk.jpg -name=disk
+
+#QUITNADO ESPACIO
+fdisk -add=-500 -size=10240 -unit=k -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part2
+rep -id=241a -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p3_r1_disk.jpg -name=disk
+
+#******************** MONTAR PARTICIONES ********************
+#DISCO 1
+#242a -> 24 sus ultimos dos digitos
+mount -path=/home/manuelimal02/Calificacion_MIA/Discos/Disco1.mia -name=Part2
+#listar particiones montadas
+list
+
+#******************** DESMONTAR PARTICION ********************
+unmount -id=242a
+#listar particiones montadas 
+list
+
+#******************** CREACION DE SISTEMA DE ARCHIVOS ********************
+mkfs -type=full -id=241a -fs=3fs
+rep -id=241A -Path=/home/manuelimal02/Calificacion_MIA/Reportes/p4_r1_disk.jpg -name=sb
+
+#******************** LOGIN ********************
+login -user=root -pass=123 -id=241a

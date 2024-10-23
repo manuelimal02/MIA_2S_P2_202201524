@@ -261,6 +261,7 @@ func comando_mkfs(entrada string, buffer io.Writer) {
 	fs := flag.NewFlagSet("mkfs", flag.ExitOnError)
 	id := fs.String("id", "", "id")
 	tipo := fs.String("type", "full", "tipo")
+	sistema := fs.String("fs", "", "sistema")
 
 	fs.Parse(os.Args[1:])
 	matches := re.FindAllStringSubmatch(entrada, -1)
@@ -272,14 +273,14 @@ func comando_mkfs(entrada string, buffer io.Writer) {
 		valorFlag = strings.Trim(valorFlag, "\"")
 
 		switch nombreFlag {
-		case "type", "id":
+		case "type", "id", "fs":
 			fs.Set(nombreFlag, valorFlag)
 		default:
 			fmt.Fprintf(buffer, "Error: El comando 'MKFS' incluye parámetros no asociados.\n")
 			return
 		}
 	}
-	SistemaDeArchivos.MKFS(*id, *tipo, buffer.(*bytes.Buffer))
+	SistemaDeArchivos.MKFS(*id, *tipo, *sistema, buffer.(*bytes.Buffer))
 }
 
 func comando_cat(params string, buffer io.Writer) {

@@ -752,6 +752,11 @@ func ELIMINAR_PARTICION(path string, name string, delete string, buffer *bytes.B
 func ADD_PARTICION(path string, name string, add int, unit string, buffer *bytes.Buffer) error {
 	fmt.Fprint(buffer, "FDISK ADD---------------------------------------------------------------------\n")
 
+	if add == 0 {
+		fmt.Fprintf(buffer, "Error FDISK ADD: El tamaño a agregar debe ser distinto que 0.\n")
+		return nil
+	}
+
 	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
 	if err != nil {
 		return err
