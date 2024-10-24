@@ -19,27 +19,30 @@ type ParticionMontada struct {
 	LoggedIn bool
 }
 
+var ListaParticionesMontadas = make(map[string][]ParticionMontada)
+
 type PathDisk struct {
 	Path string
 }
 
-var ListaParticionesMontadas = make(map[string][]ParticionMontada)
-
-var ListaRutasDiscos = make(map[string][]PathDisk)
+var ListaRutasDiscos []PathDisk
 
 func AddDiskPath(path string) {
-	ListaRutasDiscos[path] = append(ListaRutasDiscos[path], PathDisk{Path: path})
+	ListaRutasDiscos = append(ListaRutasDiscos, PathDisk{Path: path})
 }
 
 func DeleteDiskPath(path string) {
-	delete(ListaRutasDiscos, path)
+	for i, ruta := range ListaRutasDiscos {
+		if ruta.Path == path {
+			ListaRutasDiscos = append(ListaRutasDiscos[:i], ListaRutasDiscos[i+1:]...)
+			break
+		}
+	}
 }
 
 func ObtenerRutaDiscos(buffer *bytes.Buffer) {
-	for _, rutas := range ListaRutasDiscos {
-		for _, ruta := range rutas {
-			fmt.Fprintf(buffer, "%s\n", ruta.Path)
-		}
+	for _, ruta := range ListaRutasDiscos {
+		fmt.Fprintf(buffer, "%s\n", ruta.Path)
 	}
 }
 

@@ -64,7 +64,6 @@ function App() {
 
       if (text.includes("Sesión cerrada con éxito de la partición")) {
         Swal.fire(text, "Cerrando Sesión", "success");
-        //localStorage.setItem("loggedUser", "");
       } else {
         Swal.fire(text, "Error Al Cerrar Sesión", "error");
       }
