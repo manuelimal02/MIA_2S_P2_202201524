@@ -7,8 +7,6 @@ const Visualizador = () => {
   const [Particiones, setParticiones] = useState([]);
   const [DiscoSeleccionado, setDiscoSeleccionado] = useState("");
 
-  
-
   // Función para obtener las RutasDiscos de los discos
   const handleGetPathDisk = async () => {
     try {

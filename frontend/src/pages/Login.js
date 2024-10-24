@@ -22,7 +22,11 @@ const Login = ({ onLogin }) => {
         
         if (text.includes("Usuario logueado con éxito en la partición")) {
             Swal.fire(text, "Bienvenido A La aplicación", "success");
-            //localStorage.setItem("loggedUser", userId);
+            localStorage.setItem("loggedUser", userId);
+            if (onLogin) {
+              onLogin(userId);
+            }
+
         } else {
             Swal.fire(text, "Error Al Iniciar Sesión", "error");
         }

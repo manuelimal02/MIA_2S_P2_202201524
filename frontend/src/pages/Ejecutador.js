@@ -1,15 +1,19 @@
 import './Ejecutador.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
-
-
 
 function App() {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
+  const [usuario, setUsuario] = useState('');
 
-  
+  // Recuperar el usuario desde localStorage
+  useEffect(() => {
+    const loggedUser = localStorage.getItem('loggedUser');
+    setUsuario(loggedUser || 'No Existe Usuario Logueado.');
+  }, []);
+
   // Función para abrir el explorador de archivos
   const triggerFileSelect = () => {
     const fileInput = document.createElement('input');
@@ -64,6 +68,10 @@ function App() {
 
       if (text.includes("Sesión cerrada con éxito de la partición")) {
         Swal.fire(text, "Cerrando Sesión", "success");
+        localStorage.removeItem("loggedUser");
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       } else {
         Swal.fire(text, "Error Al Cerrar Sesión", "error");
       }
@@ -84,13 +92,14 @@ function App() {
         <button id="executeBtn" onClick={handleExecute}>
           <i className="fas fa-play"></i> Ejecutar
         </button>
-        <div className='usuarioLogueado'>
-        <h2 className='txtUsuario'>Usuario: {}</h2>
-        </div>
 
         <button id="logoutBtn" onClick={handleLogout}>
-          <i className="fas fa-play"></i> Cerrar Sesión
+          <i className="fas fa-right-from-bracket"></i> Cerrar Sesión
         </button>
+      </div>
+
+      <div className='usuarioLogueado'>
+          <h2 className='txtUsuario'>Usuario: {usuario}</h2>
       </div>
 
       <div className="input-section">
