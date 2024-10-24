@@ -35,7 +35,7 @@ func (Dato *ParticionUsuario) SetIDUsuario(idUsuario string) {
 var Dato ParticionUsuario
 
 func LOGIN(user string, pass string, id string, buffer *bytes.Buffer) {
-	fmt.Fprint(buffer, "LOGIN---------------------------------------------------------------------\n")
+	fmt.Fprint(buffer, "LOGIN\n")
 	ParticionesMontadas := AdminDisco.GetMountedPartitions()
 	var RutaArchivo string
 	var ParticionEncontrada bool
@@ -129,7 +129,7 @@ func LOGIN(user string, pass string, id string, buffer *bytes.Buffer) {
 }
 
 func LOGOUT(buffer *bytes.Buffer) {
-	fmt.Fprint(buffer, "LOGOUT---------------------------------------------------------------------\n")
+	fmt.Fprint(buffer, "LOGOUT\n")
 	ParticionesMontadas := AdminDisco.GetMountedPartitions()
 	var SesionActiva bool
 

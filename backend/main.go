@@ -21,8 +21,11 @@ func AnalizarEntrada(respuesta http.ResponseWriter, solicitud *http.Request) {
 			http.Error(respuesta, "Error En La Solicitud.", http.StatusInternalServerError)
 			return
 		}
+		fmt.Println("--------")
+		fmt.Println(string(body))
+		fmt.Println("--------")
 		result := Analizador.Analizar(string(body))
-		fmt.Fprintf(respuesta, result)
+		fmt.Fprint(respuesta, result)
 		return
 	}
 	http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)

@@ -220,8 +220,7 @@ func SistemaEXT3(n int32, Particion EstructuraDisco.Partition, NuevoSuperBloque 
 	fmt.Println("-------------------------------------------------------------------------------------")
 	EstructuraDisco.PrintSuperblock(NuevoSuperBloque)
 	fmt.Println("-------------------------------------------------------------------------------------")
-	fmt.Fprintf(buffer, "Partición: %s formateada (Sistema EX3) exitosamente.\n", string(Particion.PartName[:]))
-
+	fmt.Fprintf(buffer, "Partición: %s formateada (Sistema EX3) exitosamente.\n", strings.TrimRight(string(Particion.PartName[:]), "\x00"))
 }
 
 func initJournaling(NuevoSuperBloque EstructuraDisco.Superblock, archivo *os.File, buffer *bytes.Buffer) error {
