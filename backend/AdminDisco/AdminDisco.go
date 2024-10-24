@@ -19,7 +19,29 @@ type ParticionMontada struct {
 	LoggedIn bool
 }
 
+type PathDisk struct {
+	Path string
+}
+
 var ListaParticionesMontadas = make(map[string][]ParticionMontada)
+
+var ListaRutasDiscos = make(map[string][]PathDisk)
+
+func AddDiskPath(path string) {
+	ListaRutasDiscos[path] = append(ListaRutasDiscos[path], PathDisk{Path: path})
+}
+
+func DeleteDiskPath(path string) {
+	delete(ListaRutasDiscos, path)
+}
+
+func ObtenerRutaDiscos(buffer *bytes.Buffer) {
+	for _, rutas := range ListaRutasDiscos {
+		for _, ruta := range rutas {
+			fmt.Fprintf(buffer, "%s\n", ruta.Path)
+		}
+	}
+}
 
 func PrintMountedPartitions(ruta string, buffer *bytes.Buffer) {
 	if len(ListaParticionesMontadas) == 0 {
@@ -87,6 +109,71 @@ func EliminarDiscoPorRuta(ruta string, buffer *bytes.Buffer) {
 
 func GenerarDiscoID(path string) string {
 	return strings.ToLower(path)
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+// Función para leer el MBR desde un archivo binario
+func ReadMBR(path string, buffer *bytes.Buffer) {
+	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	// Crear una variable para almacenar el MBR
+	var mbr EstructuraDisco.MRB
+
+	// Leer el MBR desde el archivo
+	err = ManejoArchivo.LeerObjeto(file, &mbr, 0, buffer) // Leer desde la posición 0
+	if err != nil {
+		return
+	}
+}
+
+type PartitionInfo struct {
+	Name   string `json:"name"`
+	Type   string `json:"type"`
+	Start  int32  `json:"start"`
+	Size   int32  `json:"size"`
+	Status string `json:"status"`
+}
+
+func ListPartitions(path string) ([]PartitionInfo, error) {
+	// Abrir el archivo binario
+	var buffer *bytes.Buffer
+	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
+	if err != nil {
+		return nil, fmt.Errorf("error al abrir el archivo: %v", err)
+	}
+	defer file.Close()
+
+	// Crear una variable para almacenar el MBR
+	var mbr EstructuraDisco.MRB
+
+	// Leer el MBR desde el archivo
+	err = ManejoArchivo.LeerObjeto(file, &mbr, 0, buffer) // Leer desde la posición 0
+	if err != nil {
+		return nil, fmt.Errorf("error al leer el MBR: %v", err)
+	}
+
+	// Crear una lista de particiones basada en el MBR
+	var partitions []PartitionInfo
+	for _, partition := range mbr.Partitions {
+		if partition.PartSize > 0 { // Solo agregar si la partición tiene un tamaño
+			// Limpiar el nombre para eliminar caracteres nulos
+			partitionName := strings.TrimRight(string(partition.PartName[:]), "\x00")
+
+			partitions = append(partitions, PartitionInfo{
+				Name:   partitionName,
+				Type:   strings.TrimRight(string(partition.PartType[:]), "\x00"),
+				Start:  partition.PartStart,
+				Size:   partition.PartSize,
+				Status: strings.TrimRight(string(partition.PartStatus[:]), "\x00"),
+			})
+		}
+	}
+
+	return partitions, nil
 }
 
 func MKDISK(tamano int, ajuste string, unidad string, ruta string, buffer *bytes.Buffer) {
@@ -164,6 +251,8 @@ func MKDISK(tamano int, ajuste string, unidad string, ruta string, buffer *bytes
 	EstructuraDisco.ImprimirMBR(TempMRB)
 	fmt.Println("---------------------------------------------")
 	defer archivo.Close()
+	// Agregar la ruta del disco a la lista de rutas
+	AddDiskPath(ruta)
 	fmt.Fprintf(buffer, "Disco creado con éxito en la ruta: %s.\n", ruta)
 
 }
@@ -180,6 +269,7 @@ func RMDISK(ruta string, buffer *bytes.Buffer) {
 		return
 	}
 	EliminarDiscoPorRuta(ruta, buffer)
+	DeleteDiskPath(ruta)
 	fmt.Fprintf(buffer, "Disco eliminado con éxito en la ruta: %s.\n", ruta)
 }
 
@@ -586,7 +676,7 @@ func UNMOUNT(id string, buffer *bytes.Buffer) {
 }
 
 func LIST(buffer *bytes.Buffer) {
-	fmt.Fprintf(buffer, "LIST---------------------------------------------------------------------\n")
+
 	if len(ListaParticionesMontadas) == 0 {
 		fmt.Fprintf(buffer, "No hay particiones montadas.")
 		return
@@ -602,7 +692,6 @@ func LIST(buffer *bytes.Buffer) {
 			fmt.Fprintf(buffer, "Nombre: %s, ID: %s, Ruta: %s, Estado: %c, LoggedIn: %s\n",
 				Particion.Nombre, Particion.ID, Particion.Ruta, Particion.Estado, loginStatus)
 		}
-		fmt.Fprintf(buffer, "---------------------------\n")
 	}
 }
 

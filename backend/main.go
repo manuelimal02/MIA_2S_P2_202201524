@@ -1,11 +1,17 @@
 package main
 
 import (
+	"Proyecto1/AdminDisco"
 	"Proyecto1/Analizador"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 )
+
+type ReadMBRParams struct {
+	Path string `json:"path"`
+}
 
 func HabilitarCors(respuesta *http.ResponseWriter) {
 	(*respuesta).Header().Set("Access-Control-Allow-Origin", "*")
@@ -31,8 +37,62 @@ func AnalizarEntrada(respuesta http.ResponseWriter, solicitud *http.Request) {
 	http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)
 }
 
+func ObtenerDiscos(respuesta http.ResponseWriter, solicitud *http.Request) {
+	HabilitarCors(&respuesta)
+	if solicitud.Method == http.MethodPost {
+		body, err := ioutil.ReadAll(solicitud.Body)
+		if err != nil {
+			http.Error(respuesta, "Error En La Solicitud.", http.StatusInternalServerError)
+			return
+		}
+		result := Analizador.Analizar(string(body))
+		fmt.Fprint(respuesta, result)
+		return
+	}
+	http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)
+}
+
+func ObtenerParticiones(respuesta http.ResponseWriter, solicitud *http.Request) {
+	HabilitarCors(&respuesta)
+
+	// Manejar la solicitud de verificación de CORS
+	if solicitud.Method == http.MethodOptions {
+		respuesta.WriteHeader(http.StatusOK)
+		return
+	}
+
+	if solicitud.Method == http.MethodPost {
+		var params ReadMBRParams
+		// Decodificar el cuerpo JSON de la solicitud
+		err := json.NewDecoder(solicitud.Body).Decode(&params)
+		if err != nil {
+			http.Error(respuesta, "Error al procesar la solicitud", http.StatusBadRequest)
+			return
+		}
+
+		if params.Path == "" {
+			http.Error(respuesta, "La ruta es requerida", http.StatusBadRequest)
+			return
+		}
+
+		// Leer el MBR y obtener las particiones
+		partitions, err := AdminDisco.ListPartitions(params.Path)
+		if err != nil {
+			http.Error(respuesta, fmt.Sprintf("Error al leer las particiones: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		// Responder con las particiones en formato JSON
+		json.NewEncoder(respuesta).Encode(partitions)
+	} else {
+		http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)
+	}
+}
+
 func main() {
 	http.HandleFunc("/AnalizadorGo/ProcesarComando", AnalizarEntrada)
+	http.HandleFunc("/AnalizadorGo/ObtenerDiscos", ObtenerDiscos)
+	http.HandleFunc("/AnalizadorGo/ObtenerParticiones", ObtenerParticiones)
 	fmt.Println("-------------------------------------------")
 	fmt.Println("Servidor corriendo en localhost:8080")
 	fmt.Println("-------------------------------------------")

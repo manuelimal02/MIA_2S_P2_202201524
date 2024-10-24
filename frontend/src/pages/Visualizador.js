@@ -1,28 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import Swal from "sweetalert2";
+import "./Visualizador.css";
 
 const Visualizador = () => {
-  const [disks, setDisks] = useState([]);
+  const [rutas, setRutas] = useState([]); 
   const [partitions, setPartitions] = useState([]);
   const [selectedDisk, setSelectedDisk] = useState("");
 
-  useEffect(() => {
-    // Leer los discos desde localStorage
-    const storedDisks = JSON.parse(localStorage.getItem("disks")) || [];
-    setDisks(storedDisks);
-  }, []);
+  // Función para obtener las rutas de los discos
+  const handleGetPathDisk = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/AnalizadorGo/ObtenerDiscos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+        body: "obtenerdiscosruta",
+      });
 
-  // Función para obtener solo el nombre del archivo del path
-  const getDiskName = (path) => {
-    return path.split('/').pop();
+      const text = await response.text();
+
+      if (text.includes("No hay particiones montadas.")) {
+        Swal.fire(text, "No hay particiones montadas", "error");
+      } else {
+        const rutasObtenidas = text.split('\n').filter(ruta => ruta.trim() !== "");
+        setRutas(rutasObtenidas);
+        Swal.fire("Mostrando Discos", "Particiones Montadas", "success");
+      }
+
+    } catch (error) {
+      Swal.fire("Error Al Enviar Texto: "+error, "Error Desconocido", "error");
+    }
   };
 
-  // Función para obtener las particiones de un disco
+  // Función para obtener las particiones de un disco específico
   const fetchPartitions = (diskPath) => {
-    // Guardar el disco seleccionado
-    setSelectedDisk(getDiskName(diskPath));
+    setSelectedDisk(getDiskName(diskPath)); // Guardar el disco seleccionado
 
     // Hacer la solicitud al backend para obtener las particiones
-    fetch("http://localhost:8080/api/readmbr", {
+    fetch("http://localhost:8080/AnalizadorGo/ObtenerParticiones", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,6 +47,7 @@ const Visualizador = () => {
     })
       .then((response) => response.json())
       .then((data) => {
+        console.log("Particiones obtenidas:", data);
         setPartitions(data || []); 
       })
       .catch((error) => {
@@ -39,23 +56,25 @@ const Visualizador = () => {
       });
   };
 
+  // Función para obtener el nombre del disco a partir de la ruta (por ejemplo: "disco1.mia")
+  const getDiskName = (diskPath) => {
+    const parts = diskPath.split('/');
+    return parts[parts.length - 1]; // Devolver la última parte de la ruta
+  };
+
   return (
-    <div className="container mt-5">
+    <div className="unique-container">
+      <button id="logoutBtn" className="unique-btn" onClick={handleGetPathDisk}>
+        <i className="fas fa-play"></i> Mostrar Discos
+      </button>
+
       <h2>Discos Creados</h2>
-      <div className="row">
-        {disks.length > 0 ? (
-          disks.map((disk, index) => (
-            <div key={index} className="col-md-3">
-              <div
-                className="card mb-3"
-                style={{ cursor: "pointer" }}
-                // Al hacer clic en el disco, obtener particiones
-                onClick={() => fetchPartitions(disk)} 
-              >
-                <div className="card-body">
-                  <h5 className="card-title">Disco: {getDiskName(disk)}</h5>
-                </div>
-              </div>
+      <div className="unique-disks">
+        {rutas.length > 0 ? (
+          rutas.map((disk, index) => (
+            <div key={index} className="unique-disk-item" onClick={() => fetchPartitions(disk)}>
+              <i className="fas fa-hdd unique-disk-icon"></i> 
+              <h5>Disco: {getDiskName(disk)}</h5>
             </div>
           ))
         ) : (
@@ -64,12 +83,12 @@ const Visualizador = () => {
       </div>
 
       {selectedDisk && (
-        <div className="mt-5">
+        <div className="unique-partitions">
           <h3>Particiones del Disco: {selectedDisk}</h3>
           {partitions && partitions.length > 0 ? (
-            <ul className="list-group">
+            <ul className="unique-partition-list">
               {partitions.map((partition, index) => (
-                <li key={index} className="list-group-item">
+                <li key={index} className="unique-partition-item">
                   <strong>Nombre:</strong> {partition.name} | <strong>Tipo:</strong> {partition.type} |{" "}
                   <strong>Tamaño:</strong> {partition.size} | <strong>Inicio:</strong> {partition.start}
                 </li>

@@ -81,6 +81,8 @@ func AnalizarComando(comando string, parametros string, buffer io.Writer) {
 		comando_rep(parametros, buffer)
 	} else if strings.Contains(comando, "list") {
 		comando_list(parametros, buffer)
+	} else if strings.Contains(comando, "obtenerdiscosruta") {
+		comando_get(parametros, buffer)
 	} else {
 		fmt.Fprintf(buffer, "Error: Comando No Encontrado.\n")
 	}
@@ -227,6 +229,15 @@ func comando_list(entrada string, buffer io.Writer) {
 		return
 	}
 	AdminDisco.LIST(buffer.(*bytes.Buffer))
+}
+
+func comando_get(entrada string, buffer io.Writer) {
+	entrada = strings.TrimSpace(entrada)
+	if len(entrada) > 0 {
+		fmt.Fprintf(buffer, "Error: El comando 'LIST' incluye parámetros no asociados.\n")
+		return
+	}
+	AdminDisco.ObtenerRutaDiscos(buffer.(*bytes.Buffer))
 }
 
 // Función para ejecutar el comando REP
