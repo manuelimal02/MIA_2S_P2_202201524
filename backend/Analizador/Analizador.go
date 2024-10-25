@@ -234,7 +234,7 @@ func comando_list(entrada string, buffer io.Writer) {
 func comando_get(entrada string, buffer io.Writer) {
 	entrada = strings.TrimSpace(entrada)
 	if len(entrada) > 0 {
-		fmt.Fprintf(buffer, "Error: El comando 'LIST' incluye parámetros no asociados.\n")
+		fmt.Fprintf(buffer, "Error Al Obtener Las Rutas De Los Discos.\n")
 		return
 	}
 	AdminDisco.ObtenerRutaDiscos(buffer.(*bytes.Buffer))

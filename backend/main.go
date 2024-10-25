@@ -37,21 +37,6 @@ func AnalizarEntrada(respuesta http.ResponseWriter, solicitud *http.Request) {
 	http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)
 }
 
-func ObtenerDiscos(respuesta http.ResponseWriter, solicitud *http.Request) {
-	HabilitarCors(&respuesta)
-	if solicitud.Method == http.MethodPost {
-		body, err := ioutil.ReadAll(solicitud.Body)
-		if err != nil {
-			http.Error(respuesta, "Error En La Solicitud.", http.StatusInternalServerError)
-			return
-		}
-		result := Analizador.Analizar(string(body))
-		fmt.Fprint(respuesta, result)
-		return
-	}
-	http.Error(respuesta, "Método No permitido", http.StatusMethodNotAllowed)
-}
-
 func ObtenerParticiones(respuesta http.ResponseWriter, solicitud *http.Request) {
 	HabilitarCors(&respuesta)
 
@@ -91,7 +76,6 @@ func ObtenerParticiones(respuesta http.ResponseWriter, solicitud *http.Request) 
 
 func main() {
 	http.HandleFunc("/AnalizadorGo/ProcesarComando", AnalizarEntrada)
-	http.HandleFunc("/AnalizadorGo/ObtenerDiscos", ObtenerDiscos)
 	http.HandleFunc("/AnalizadorGo/ObtenerParticiones", ObtenerParticiones)
 	fmt.Println("-------------------------------------------")
 	fmt.Println("Servidor corriendo en localhost:8080")

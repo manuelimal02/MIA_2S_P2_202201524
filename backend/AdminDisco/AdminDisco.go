@@ -21,19 +21,19 @@ type ParticionMontada struct {
 
 var ListaParticionesMontadas = make(map[string][]ParticionMontada)
 
-type PathDisk struct {
-	Path string
+type RutaDisco struct {
+	Ruta string
 }
 
-var ListaRutasDiscos []PathDisk
+var ListaRutasDiscos []RutaDisco
 
-func AddDiskPath(path string) {
-	ListaRutasDiscos = append(ListaRutasDiscos, PathDisk{Path: path})
+func AgregarRutaDisco(ruta string) {
+	ListaRutasDiscos = append(ListaRutasDiscos, RutaDisco{Ruta: ruta})
 }
 
-func DeleteDiskPath(path string) {
+func EliminarRutaDisco(ruta_disco string) {
 	for i, ruta := range ListaRutasDiscos {
-		if ruta.Path == path {
+		if ruta.Ruta == ruta_disco {
 			ListaRutasDiscos = append(ListaRutasDiscos[:i], ListaRutasDiscos[i+1:]...)
 			break
 		}
@@ -42,7 +42,7 @@ func DeleteDiskPath(path string) {
 
 func ObtenerRutaDiscos(buffer *bytes.Buffer) {
 	for _, ruta := range ListaRutasDiscos {
-		fmt.Fprintf(buffer, "%s\n", ruta.Path)
+		fmt.Fprintf(buffer, "%s\n", ruta.Ruta)
 	}
 }
 
@@ -115,23 +115,6 @@ func GenerarDiscoID(path string) string {
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------------
-// Función para leer el MBR desde un archivo binario
-func ReadMBR(path string, buffer *bytes.Buffer) {
-	file, err := ManejoArchivo.AbrirArchivo(path, buffer)
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	// Crear una variable para almacenar el MBR
-	var mbr EstructuraDisco.MRB
-
-	// Leer el MBR desde el archivo
-	err = ManejoArchivo.LeerObjeto(file, &mbr, 0, buffer) // Leer desde la posición 0
-	if err != nil {
-		return
-	}
-}
 
 type PartitionInfo struct {
 	Name   string `json:"name"`
@@ -255,7 +238,7 @@ func MKDISK(tamano int, ajuste string, unidad string, ruta string, buffer *bytes
 	fmt.Println("---------------------------------------------")
 	defer archivo.Close()
 	// Agregar la ruta del disco a la lista de rutas
-	AddDiskPath(ruta)
+	AgregarRutaDisco(ruta)
 	fmt.Fprintf(buffer, "Disco creado con éxito en la ruta: %s.\n", ruta)
 
 }
@@ -272,7 +255,7 @@ func RMDISK(ruta string, buffer *bytes.Buffer) {
 		return
 	}
 	EliminarDiscoPorRuta(ruta, buffer)
-	DeleteDiskPath(ruta)
+	EliminarRutaDisco(ruta)
 	fmt.Fprintf(buffer, "Disco eliminado con éxito en la ruta: %s.\n", ruta)
 }
 

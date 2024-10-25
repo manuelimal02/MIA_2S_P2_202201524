@@ -10,7 +10,7 @@ const Visualizador = () => {
   // Función para obtener las RutasDiscos de los discos
   const handleGetPathDisk = async () => {
     try {
-      const response = await fetch('http://localhost:8080/AnalizadorGo/ObtenerDiscos', {
+      const response = await fetch('http://localhost:8080/AnalizadorGo/ProcesarComando', {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
@@ -21,11 +21,11 @@ const Visualizador = () => {
       const text = await response.text();
 
       if (text === "") {
-        Swal.fire(text, "No hay particiones montadas", "error");
+        Swal.fire("No Existen Discos Creados ", "Visualizador", "error");
       } else {
         const rutasObtenidas = text.split('\n').filter(ruta => ruta.trim() !== "");
         setRutas(rutasObtenidas);
-        Swal.fire("Mostrando Discos", "Particiones Montadas", "success");
+        Swal.fire("Mostrando Discos", "Visualizador", "success");
       }
 
     } catch (error) {
