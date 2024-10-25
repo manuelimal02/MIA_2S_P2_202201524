@@ -4,58 +4,58 @@ import React, { useEffect, useState } from 'react';
 import Swal from "sweetalert2";
 
 function App() {
-  const [inputText, setInputText] = useState('');
-  const [outputText, setOutputText] = useState('');
-  const [usuario, setUsuario] = useState('');
+  const [TextoEntrada, SetTextoEntrada] = useState('');
+  const [TextoSalida, SetTextoSalida] = useState('');
+  const [UsuarioL, setUsuario] = useState('');
 
-  // Recuperar el usuario desde localStorage
+  // Recuperar el UsuarioL desde localStorage
   useEffect(() => {
-    const loggedUser = localStorage.getItem('loggedUser');
-    setUsuario(loggedUser || 'No Existe Usuario Logueado.');
+    const UsuarioLogueado = localStorage.getItem('UsuarioLogueado');
+    setUsuario(UsuarioLogueado || 'No Existe Usuario Logueado');
   }, []);
 
   // Función para abrir el explorador de archivos
-  const triggerFileSelect = () => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = '.smia';
-    fileInput.onchange = handleFileSelect;
-    fileInput.click();
+  const SeleccionadorArchivos = () => {
+    const ArchivoEntrante = document.createElement('input');
+    ArchivoEntrante.type = 'file';
+    ArchivoEntrante.accept = '.smia';
+    ArchivoEntrante.onchange = HandleSeleccionarArchivos;
+    ArchivoEntrante.click();
   };
 
-  const handleFileSelect = (event) => {
-    const fileInput = event.target.files[0];
-    if (fileInput && fileInput.name.endsWith('.smia')) {
+  const HandleSeleccionarArchivos = (event) => {
+    const ArchivoEntrante = event.target.files[0];
+    if (ArchivoEntrante && ArchivoEntrante.name.endsWith('.smia')) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setInputText(e.target.result);
+        SetTextoEntrada(e.target.result);
       };
-      reader.readAsText(fileInput);
+      reader.readAsText(ArchivoEntrante);
     } else {
       Swal.fire("Se debe seleccionar un archivo con la extensión '.smia'", "Error", "error");
     }
   };
 
   // Función para enviar el texto al backend "todos los comandos"
-  const handleExecute = async () => {
+  const HandleProcesarComando = async () => {
     try {
       const response = await fetch('http://localhost:8080/AnalizadorGo/ProcesarComando', {
         method: 'POST',
         headers: {
           'Content-Type': 'text/plain',
         },
-        body: inputText,
+        body: TextoEntrada,
       });
-      const text = await response.text();
-      setOutputText(text);
+      const respuesta = await response.text();
+      SetTextoSalida(respuesta);  
     } catch (error) {
-      Swal.fire("Error Al Enviar Texto: "+error, "Error Desconocido", "error");
-      setOutputText('Error al procesar los comandos de entrada.'); 
+      Swal.fire("Error Al Enviar Texto: " + error, "Error Desconocido", "error");
+      SetTextoSalida('Error al procesar los comandos de entrada.'); 
     }
   };
 
   // Función para enviar el texto al backend "logout"
-  const handleLogout = async () => {
+  const HandleCerrarSesion = async () => {
     try {
       const response = await fetch('http://localhost:8080/AnalizadorGo/ProcesarComando', {
         method: 'POST',
@@ -64,52 +64,52 @@ function App() {
         },
         body: "logout",
       });
-      const text = await response.text();
+      const respuesta = await response.text();
 
-      if (text.includes("Sesión cerrada con éxito de la partición")) {
-        Swal.fire(text, "Cerrando Sesión", "success");
-        localStorage.removeItem("loggedUser");
+      if (respuesta.includes("Sesión cerrada con éxito de la partición")) {
+        Swal.fire(respuesta, "Cerrando Sesión", "success");
+        localStorage.removeItem("UsuarioLogueado");
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        Swal.fire(text, "Error Al Cerrar Sesión", "error");
+        Swal.fire(respuesta, "Error Al Cerrar Sesión", "error");
       }
-      setOutputText(text);
+      SetTextoSalida(respuesta);
 
     } catch (error) {
       Swal.fire("Error Al Enviar Texto: "+error, "Error Desconocido", "error");
-      setOutputText('Error al procesar los comandos de entrada.'); 
+      SetTextoSalida('Error al procesar los comandos de entrada.'); 
     }
   };
 
   return (
     <div className="container">
       <div className="buttons">
-        <button id="selectBtn" onClick={triggerFileSelect}>
+        <button id="selectBtn" onClick={SeleccionadorArchivos}>
           <i className="fas fa-folder-open"></i> Seleccionar
         </button>
-        <button id="executeBtn" onClick={handleExecute}>
+        <button id="executeBtn" onClick={HandleProcesarComando}>
           <i className="fas fa-play"></i> Ejecutar
         </button>
 
-        <button id="logoutBtn" onClick={handleLogout}>
+        <button id="logoutBtn" onClick={HandleCerrarSesion}>
           <i className="fas fa-right-from-bracket"></i> Cerrar Sesión
         </button>
       </div>
 
       <div className='usuarioLogueado'>
-          <h2 className='txtUsuario'>Usuario: {usuario}</h2>
+          <h2 className='txtUsuario'>Usuario: {UsuarioL}</h2>
       </div>
 
       <div className="input-section">
         <h2>Entrada:</h2>
-        <textarea id="inputArea" value={inputText} onChange={(e) => setInputText(e.target.value)}/>
+        <textarea id="inputArea" value={TextoEntrada} onChange={(e) => SetTextoEntrada(e.target.value)}/>
       </div>
 
       <div className="output-section">
         <h2>Salida:</h2>
-        <textarea id="outputArea" placeholder="Salida" value={outputText} readOnly/>
+        <textarea id="outputArea" placeholder="Salida" value={TextoSalida} readOnly/>
       </div>
     </div>
   );

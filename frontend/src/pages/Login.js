@@ -3,36 +3,37 @@ import './Login.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import Swal from "sweetalert2";
 
-const Login = ({ onLogin }) => {
-  const [userId, setUserId] = useState('');
-  const [password, setPassword] = useState('');
-  const [partitionId, setPartitionId] = useState('');
+const Login = ({ EnLogin }) => {
+  const [IdUsuario, setIdUsuario] = useState('');
+  const [Contrasena, setContrasena] = useState('');
+  const [IdParticion, setIdParticion] = useState('');
 
   const handleLogin = async () => {
-    const loginCommand = `login -user="${userId}" -pass="${password}" -id="${partitionId}"`;
+    const comando = `login -user="${IdUsuario}" -pass="${Contrasena}" -id="${IdParticion}"`;
     try {
         const response = await fetch('http://localhost:8080/AnalizadorGo/ProcesarComando', {
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
             },
-            body: loginCommand.toLocaleLowerCase(),
+            body: comando.toLocaleLowerCase(),
         });
-        const text = await response.text();
+        const respuesta = await response.text();
         
-        if (text.includes("Usuario logueado con éxito en la partición")) {
-            Swal.fire(text, "Bienvenido A La aplicación", "success");
-            localStorage.setItem("loggedUser", userId);
-            if (onLogin) {
-              onLogin(userId);
+        if (respuesta.includes("Usuario logueado con éxito en la partición")) {
+            Swal.fire(respuesta, "Bienvenido A La aplicación", "success");
+            localStorage.setItem("UsuarioLogueado", IdUsuario);
+
+            if (EnLogin) {
+              EnLogin(IdUsuario);
             }
 
         } else {
-            Swal.fire(text, "Error Al Iniciar Sesión", "error");
+            Swal.fire(respuesta, "Error Al Iniciar Sesión", "error");
         }
         
     } catch (error) {
-        Swal.fire("Error Al Enviar Texto: "+error, "Error Desconocido", "error");
+        Swal.fire("Error Al Enviar Texto: " + error, "Error Desconocido", "error");
     }
 }
 
@@ -48,8 +49,8 @@ const Login = ({ onLogin }) => {
           type="text"
           className="login-input"
           placeholder="Ingrese el ID de la partición"
-          value={partitionId}
-          onChange={(e) => setPartitionId(e.target.value)}
+          value={IdParticion}
+          onChange={(e) => setIdParticion(e.target.value)}
         />
       </div>
       <div className="login-mb">
@@ -60,8 +61,8 @@ const Login = ({ onLogin }) => {
           type="text"
           className="login-input"
           placeholder="Ingrese su usuario"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          value={IdUsuario}
+          onChange={(e) => setIdUsuario(e.target.value)}
         />
       </div>
       <div className="login-mb">
@@ -72,8 +73,8 @@ const Login = ({ onLogin }) => {
           type="password"
           className="login-input"
           placeholder="Ingrese su contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={Contrasena}
+          onChange={(e) => setContrasena(e.target.value)}
         />
       </div>
       <button className="login-btn" onClick={handleLogin}>

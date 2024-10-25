@@ -27,9 +27,6 @@ func AnalizarEntrada(respuesta http.ResponseWriter, solicitud *http.Request) {
 			http.Error(respuesta, "Error En La Solicitud.", http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("--------")
-		fmt.Println(string(body))
-		fmt.Println("--------")
 		result := Analizador.Analizar(string(body))
 		fmt.Fprint(respuesta, result)
 		return

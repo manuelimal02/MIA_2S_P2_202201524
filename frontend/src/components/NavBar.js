@@ -5,26 +5,14 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const Navbar = () => {
   return (
-    <nav className="navbar">
+    <nav className="navbar-principal">
         <div className="logo">
-            <h2>Sistema De Archivos EX2 y EX3</h2>
+            <h2>Sistema De Archivos EX2-EX3</h2>
         </div>
-        <ul className="nav-links">
-            <li>
-                <Link to="/execution">
-                    <i className="fas fa-play"></i> Ejecución
-                </Link>
-            </li>
-            <li>
-                <Link to="/login">
-                    <i className="fas fa-sign-in-alt"></i> Iniciar sesión
-                </Link>
-            </li>
-            <li>
-                <Link to="/visualizador">
-                    <i className="fas fa-eye"></i> Visualizador
-                </Link>
-            </li>
+        <ul className="navbar-enlaces">
+            <li><Link to="/execution"><i className="fas fa-play"></i> Ejecución</Link></li>
+            <li><Link to="/login"><i className="fas fa-address-card"></i> Iniciar sesión</Link></li>
+            <li><Link to="/visualizador"><i className="fas fa-tv"></i> Visualizador</Link></li>
         </ul>
     </nav>
   );

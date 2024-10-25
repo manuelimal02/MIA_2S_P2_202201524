@@ -18,18 +18,18 @@ const Visualizador = () => {
         body: "obtenerdiscosruta",
       });
 
-      const text = await response.text();
+      const respuesta = await response.text();
 
-      if (text === "") {
+      if (respuesta === "") {
         Swal.fire("No Existen Discos Creados ", "Visualizador", "error");
       } else {
-        const rutasObtenidas = text.split('\n').filter(ruta => ruta.trim() !== "");
-        setRutas(rutasObtenidas);
+        const rutas = respuesta.split('\n').filter(ruta => ruta.trim() !== "");
+        setRutas(rutas);
         Swal.fire("Mostrando Discos", "Visualizador", "success");
       }
 
     } catch (error) {
-      Swal.fire("Error Al Enviar Texto: "+error, "Error Desconocido", "error");
+      Swal.fire("Error Al Enviar Texto: " + error, "Error Desconocido", "error");
     }
   };
 

@@ -2,7 +2,7 @@ body {
     font-family: 'Courier New', Courier, monospace;
 }
 
-.navbar {
+.navbar-principal {
     background-color: #005f99;
     display: flex;
     justify-content: space-between;
@@ -20,16 +20,16 @@ body {
     font-weight: bold;
 }
 
-.nav-links {
+.navbar-enlaces {
     list-style: none;
     display: flex;
 }
 
-.nav-links li {
+.navbar-enlaces li {
     margin: 0 15px;
 }
 
-.nav-links a {
+.navbar-enlaces a {
     color: white;
     text-decoration: none;
     font-size: 18px;
@@ -40,15 +40,15 @@ body {
     align-items: center;
 }
 
-.nav-links a i {
+.navbar-enlaces a i {
     margin-right: 8px;
 }
 
-.nav-links a:hover {
+.navbar-enlaces a:hover {
     background-color: #007acc;
     transform: scale(1.05);
 }
 
-.nav-links a:active {
+.navbar-enlaces a:active {
     background-color: #004f80;
 }
