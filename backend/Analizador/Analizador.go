@@ -67,14 +67,8 @@ func AnalizarComando(comando string, parametros string, buffer io.Writer) {
 		comando_logout(parametros, buffer)
 	} else if strings.Contains(comando, "mkgrp") {
 		comando_mkgrp(parametros, buffer)
-	} else if strings.Contains(comando, "rmgrp") {
-		//comando_rmgrp(parametros, buffer)
 	} else if strings.Contains(comando, "mkusr") {
 		comando_mkusr(parametros, buffer)
-	} else if strings.Contains(comando, "rmusr") {
-		//comando_rmusr(parametros, buffer)
-	} else if strings.Contains(comando, "chgrp") {
-		//comando_chgrp(parametros, buffer)
 	} else if strings.Contains(comando, "cat") {
 		comando_cat(parametros, buffer)
 	} else if strings.Contains(comando, "rep") {
@@ -410,35 +404,6 @@ func comando_mkgrp(entrada string, buffer io.Writer) {
 	AdminRoot.Mkgrp(*nombre, buffer.(*bytes.Buffer))
 }
 
-/*
-func comando_rmgrp(entrada string, buffer io.Writer) {
-	fs := flag.NewFlagSet("rmgrp ", flag.ExitOnError)
-	nombre := fs.String("name", "", "Nombre")
-
-	fs.Parse(os.Args[1:])
-	matches := re.FindAllStringSubmatch(entrada, -1)
-
-	for _, match := range matches {
-		nombreFlag := match[1]
-		valorFlag := strings.ToLower(match[2])
-
-		valorFlag = strings.Trim(valorFlag, "\"")
-
-		switch nombreFlag {
-		case "name":
-			fs.Set(nombreFlag, valorFlag)
-		default:
-			fmt.Fprintf(buffer, "Error: El comando 'RMGRP' incluye parámetros no asociados.\n")
-			return
-		}
-	}
-	if *nombre == "" {
-		fmt.Fprintf(buffer, "Error: Faltan parámetros obligatorios para el comando 'RMGRP'.\n")
-		return
-	}
-	AdminRoot.Rmgrp(*nombre, buffer.(*bytes.Buffer))
-}*/
-
 func comando_mkusr(entrada string, buffer io.Writer) {
 	fs := flag.NewFlagSet("mkusr ", flag.ExitOnError)
 	nombre := fs.String("user", "", "Usuario")
@@ -468,65 +433,6 @@ func comando_mkusr(entrada string, buffer io.Writer) {
 	}
 	AdminRoot.Mkusr(*nombre, *pass, *grp, buffer.(*bytes.Buffer))
 }
-
-/*
-func comando_rmusr(entrada string, buffer io.Writer) {
-	fs := flag.NewFlagSet("rmusr ", flag.ExitOnError)
-	nombre := fs.String("user", "", "usuario")
-
-	fs.Parse(os.Args[1:])
-	matches := re.FindAllStringSubmatch(entrada, -1)
-
-	for _, match := range matches {
-		nombreFlag := match[1]
-		valorFlag := strings.ToLower(match[2])
-
-		valorFlag = strings.Trim(valorFlag, "\"")
-
-		switch nombreFlag {
-		case "user":
-			fs.Set(nombreFlag, valorFlag)
-		default:
-			fmt.Fprintf(buffer, "Error: El comando 'RMUSR' incluye parámetros no asociados.\n")
-			return
-		}
-	}
-	if *nombre == "" {
-		fmt.Fprintf(buffer, "Error: Faltan parámetros obligatorios para el comando 'RMUSR'.\n")
-		return
-	}
-	AdminRoot.Rmusr(*nombre, buffer.(*bytes.Buffer))
-}*/
-/*
-func comando_chgrp(entrada string, buffer io.Writer) {
-	fs := flag.NewFlagSet("chgrp ", flag.ExitOnError)
-	usr := fs.String("user", "", "Usuario")
-	grp := fs.String("grp", "", "Grupo")
-
-	fs.Parse(os.Args[1:])
-	matches := re.FindAllStringSubmatch(entrada, -1)
-
-	for _, match := range matches {
-		nombreFlag := match[1]
-		valorFlag := strings.ToLower(match[2])
-
-		valorFlag = strings.Trim(valorFlag, "\"")
-
-		switch nombreFlag {
-		case "user", "grp":
-			fs.Set(nombreFlag, valorFlag)
-		default:
-			fmt.Fprintf(buffer, "Error: El comando 'CHGRP' incluye parámetros no asociados.\n")
-			return
-		}
-	}
-	if *usr == "" || *grp == "" {
-		fmt.Fprintf(buffer, "Error: Faltan parámetros obligatorios para el comando 'CHGRP'.\n")
-		return
-	}
-	AdminRoot.Chgrp(*usr, *grp, buffer.(*bytes.Buffer))
-}
-*/
 
 func comando_unmount(entrada string, buffer io.Writer) {
 	fs := flag.NewFlagSet("unmount", flag.ExitOnError)
